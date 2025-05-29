@@ -1,0 +1,73 @@
+models:
+  Category:
+    nom: string
+    type: enum:entree,sortie,paiement,versement
+    description: text nullable
+    relationships:
+      hasMany:
+        - Entree
+        - Sortie
+        - Versement
+        - Paiement
+
+  Entree:
+    date: date
+    montant: decimal:10,2
+    description: text nullable
+    user_id: foreign:user
+    category_id: foreign:category
+    relationships:
+      belongsTo:
+        - Category
+        - User
+
+  Sortie:
+    date: date
+    montant: decimal:10,2
+    description: text nullable
+    user_id: foreign:user
+    category_id: foreign:category
+    relationships:
+      belongsTo:
+        - Category
+        - User
+
+  Versement:
+    date: date
+    montant: decimal:10,2
+    reference: string nullable
+    description: text nullable
+    user_id: foreign:user
+    category_id: foreign:category
+    relationships:
+      belongsTo:
+        - Category
+        - User
+
+  Paiement:
+    date: date
+    montant: decimal:10,2
+    reference: string nullable
+    description: text nullable
+    user_id: foreign:user
+    category_id: foreign:category
+    relationships:
+      belongsTo:
+        - Category
+        - User
+
+seeders: Category, Entree , Sortie, Versement, Paiement
+controllers:
+  # ...
+  Category:
+    resource :  web
+  Entree:
+    resource :  web
+  Sortie:
+    resource :  web
+  Versement:
+    resource :  web
+  Paiement:
+    resource :  web
+
+
