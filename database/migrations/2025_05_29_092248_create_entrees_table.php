@@ -20,7 +20,6 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->foreignId('category_id')->constrained();
             $table->foreignId('user_id')->constrained();
-           // $table->foreignId('category_user_id');
             $table->timestamps();
             $table->softDeletes();
         });

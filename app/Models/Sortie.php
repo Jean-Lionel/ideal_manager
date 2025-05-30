@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Sortie extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -21,7 +23,6 @@ class Sortie extends Model
         'description',
         'user_id',
         'category_id',
-        'category_user_id',
     ];
 
     /**
@@ -37,7 +38,6 @@ class Sortie extends Model
             'montant' => 'decimal:2',
             'user_id' => 'integer',
             'category_id' => 'integer',
-            'category_user_id' => 'integer',
         ];
     }
 
@@ -54,5 +54,15 @@ class Sortie extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Le "booted" du modèle.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function ($sortie) {
+            $sortie->user_id = auth()->id();
+        });
     }
 }

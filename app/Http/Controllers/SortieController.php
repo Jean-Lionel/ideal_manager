@@ -2,65 +2,107 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Sortie;
+use App\Models\Category;
+use Illuminate\Http\Request;
 use App\Http\Requests\SortieStoreRequest;
 use App\Http\Requests\SortieUpdateRequest;
-use App\Models\Sortie;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class SortieController extends Controller
 {
-    public function index(Request $request): Response
+    /**
+     * Afficher la liste des sorties.
+     */
+    public function index(Request $request)
     {
-        $sorties = Sortie::all();
+        $query = Sortie::with('category')
+            ->latest('date');
 
-        return view('sortie.index', [
-            'sorties' => $sorties,
-        ]);
+        // Recherche
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('description', 'like', "%{$search}%")
+                  ->orWhere('montant', 'like', "%{$search}%")
+                  ->orWhereHas('category', function($q) use ($search) {
+                      $q->where('nom', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $sorties = $query->paginate(15)->withQueryString();
+        $totalMontant = $sorties->sum('montant');
+
+        return view('sortie.index', compact('sorties', 'totalMontant'));
     }
 
-    public function create(Request $request): Response
+    /**
+     * Afficher le formulaire de création d'une sortie.
+     */
+    public function create()
     {
-        return view('sortie.create');
+        $categories = Category::where('type', 'sortie')
+            ->orderBy('nom')
+            ->get();
+
+        return view('sortie.create', compact('categories'));
     }
 
-    public function store(SortieStoreRequest $request): Response
+    /**
+     * Enregistrer une nouvelle sortie.
+     */
+    public function store(SortieStoreRequest $request)
     {
-        $sortie = Sortie::create($request->validated());
+        $sortie = new Sortie($request->validated());
+        $sortie->user_id = Auth::id();
+        $sortie->save();
 
-        $request->session()->flash('sortie.id', $sortie->id);
-
-        return redirect()->route('sorties.index');
+        return redirect()
+            ->route('sorties.index')
+            ->with('success', 'La sortie a été enregistrée avec succès.');
     }
 
-    public function show(Request $request, Sortie $sortie): Response
+    /**
+     * Afficher le formulaire d'édition d'une sortie.
+     */
+    public function edit(Sortie $sortie)
     {
-        return view('sortie.show', [
-            'sortie' => $sortie,
-        ]);
+        $this->authorize('update', $sortie);
+
+        $categories = Category::where('type', 'sortie')
+            ->where('user_id', Auth::id())
+            ->orderBy('nom')
+            ->get();
+
+        return view('sortie.edit', compact('sortie', 'categories'));
     }
 
-    public function edit(Request $request, Sortie $sortie): Response
+    /**
+     * Mettre à jour une sortie existante.
+     */
+    public function update(SortieUpdateRequest $request, Sortie $sortie)
     {
-        return view('sortie.edit', [
-            'sortie' => $sortie,
-        ]);
-    }
+        $this->authorize('update', $sortie);
 
-    public function update(SortieUpdateRequest $request, Sortie $sortie): Response
-    {
         $sortie->update($request->validated());
 
-        $request->session()->flash('sortie.id', $sortie->id);
-
-        return redirect()->route('sorties.index');
+        return redirect()
+            ->route('sorties.index')
+            ->with('success', 'La sortie a été mise à jour avec succès.');
     }
 
-    public function destroy(Request $request, Sortie $sortie): Response
+    /**
+     * Supprimer une sortie.
+     */
+    public function destroy(Sortie $sortie)
     {
+        $this->authorize('delete', $sortie);
+
         $sortie->delete();
 
-        return redirect()->route('sorties.index');
+        return redirect()
+            ->route('sorties.index')
+            ->with('success', 'La sortie a été supprimée avec succès.');
     }
 }

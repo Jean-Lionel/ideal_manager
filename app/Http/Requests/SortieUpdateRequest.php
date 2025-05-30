@@ -16,16 +16,34 @@ class SortieUpdateRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
             'date' => ['required', 'date'],
-            'montant' => ['required', 'numeric', 'between:-99999999.99,99999999.99'],
+            'montant' => ['required', 'numeric', 'between:0,99999999999.99'],
             'description' => ['nullable', 'string'],
-            'user_id' => ['required', 'integer', 'exists:user,id'],
-            'category_id' => ['required', 'integer', 'exists:category,id'],
-            'category_user_id' => ['required', 'integer', 'exists:category_users,id'],
+            'category_id' => ['required', 'integer', 'exists:categories,id'],
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'date.required' => 'La date est obligatoire',
+            'date.date' => 'La date doit être une date valide',
+            'montant.required' => 'Le montant est obligatoire',
+            'montant.numeric' => 'Le montant doit être un nombre',
+            'montant.between' => 'Le montant doit être compris entre :min et :max',
+            'category_id.required' => 'La catégorie est obligatoire',
+            'category_id.exists' => 'La catégorie sélectionnée est invalide',
         ];
     }
 }
