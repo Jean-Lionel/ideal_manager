@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class VersementUpdateRequest extends FormRequest
+class VersementUpdateRequest extends VersementStoreRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -16,17 +17,13 @@ class VersementUpdateRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        return [
-            'date' => ['required', 'date'],
-            'montant' => ['required', 'numeric', 'between:-99999999.99,99999999.99'],
-            'reference' => ['nullable', 'string'],
-            'description' => ['nullable', 'string'],
-            'user_id' => ['required', 'integer', 'exists:user,id'],
-            'category_id' => ['required', 'integer', 'exists:category,id'],
-            'category_user_id' => ['required', 'integer', 'exists:category_users,id'],
-        ];
+        return array_merge(parent::rules(), [
+            'attachment' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+        ]);
     }
 }

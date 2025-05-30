@@ -2,58 +2,141 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class Paiement extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
 
     /**
-     * The attributes that are mass assignable.
+     * Les attributs qui sont mass assignable.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $fillable = [
         'date',
         'montant',
         'reference',
         'description',
+        'banque',
+        'attachment',
         'user_id',
         'category_id',
-        'category_user_id',
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Les attributs qui doivent être castés.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'id' => 'integer',
-            'date' => 'date',
-            'montant' => 'decimal:2',
-            'user_id' => 'integer',
-            'category_id' => 'integer',
-            'category_user_id' => 'integer',
-        ];
-    }
+    protected $casts = [
+        'date' => 'date',
+        'montant' => 'decimal:4',
+    ];
 
-    public function categoryUser(): BelongsTo
-    {
-        return $this->belongsTo(CategoryUser::class);
-    }
+    /**
+     * Les attributs qui doivent être mutés en dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'date',
+        'deleted_at',
+    ];
 
+    /**
+     * Relation avec l'utilisateur qui a créé le paiement.
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Relation avec la catégorie du paiement.
+     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Obtenir le chemin d'accès au fichier joint.
+     *
+     * @return string|null
+     */
+    public function getAttachmentUrlAttribute(): ?string
+    {
+        return $this->attachment ? Storage::url($this->attachment) : null;
+    }
+
+    /**
+     * Obtenir le nom du fichier joint.
+     *
+     * @return string|null
+     */
+    public function getAttachmentNameAttribute(): ?string
+    {
+        return $this->attachment ? basename($this->attachment) : null;
+    }
+
+    /**
+     * Scope pour filtrer les paiements par période.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $startDate
+     * @param  string  $endDate
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeDateBetween($query, $startDate, $endDate)
+    {
+        return $query->whereBetween('date', [$startDate, $endDate]);
+    }
+
+    /**
+     * Scope pour filtrer les paiements par banque.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $banque
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOfBanque($query, $banque)
+    {
+        return $query->where('banque', $banque);
+    }
+
+    /**
+     * Scope pour filtrer les paiements par catégorie.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  int  $categoryId
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOfCategory($query, $categoryId)
+    {
+        return $query->where('category_id', $categoryId);
+    }
+
+    /**
+     * Obtenir le montant formaté avec le séparateur de milliers.
+     *
+     * @return string
+     */
+    public function getFormattedMontantAttribute(): string
+    {
+        return number_format($this->montant, 4, ',', ' ');
+    }
+
+    /**
+     * Obtenir la date formatée.
+     *
+     * @return string
+     */
+    public function getFormattedDateAttribute(): string
+    {
+        return $this->date->format('d/m/Y');
     }
 }

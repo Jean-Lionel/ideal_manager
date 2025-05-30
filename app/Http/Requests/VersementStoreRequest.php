@@ -24,9 +24,7 @@ class VersementStoreRequest extends FormRequest
             'montant' => ['required', 'numeric', 'between:-99999999.99,99999999.99'],
             'reference' => ['nullable', 'string'],
             'description' => ['nullable', 'string'],
-            'user_id' => ['required', 'integer', 'exists:user,id'],
-            'category_id' => ['required', 'integer', 'exists:category,id'],
-            'category_user_id' => ['required', 'integer', 'exists:category_users,id'],
+            'category_id' => ['required', 'integer'],
         ];
     }
 }

@@ -19,6 +19,8 @@ return new class extends Migration
             $table->decimal('montant', 10, 2);
             $table->string('reference')->nullable();
             $table->text('description')->nullable();
+            $table->enum('banque', ['CRDB', 'BANCOBU','BCB','INTERBANK','KCB','BCAB','BBCI','BGEF', 'ECOBANK', 'FINBANK','OTHER']);
+            $table->text('attachment')->nullable();// FIchier justificatif
             $table->foreignId('user_id')->constrained();
             $table->foreignId('category_id')->constrained();
             $table->timestamps();
