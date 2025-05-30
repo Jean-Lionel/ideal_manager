@@ -23,6 +23,7 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained();
             $table->foreignId('category_user_id');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::enableForeignKeyConstraints();

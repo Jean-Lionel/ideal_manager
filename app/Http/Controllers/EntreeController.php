@@ -2,65 +2,124 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Entree;
+use App\Models\Category;
 use App\Http\Requests\EntreeStoreRequest;
 use App\Http\Requests\EntreeUpdateRequest;
-use App\Models\Entree;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class EntreeController extends Controller
 {
     public function index(Request $request)
     {
-        $entrees = Entree::all();
+        $query = Entree::with('category')
+            ->select('entrees.*')
+            ->join('categories', 'entrees.category_id', '=', 'categories.id')
+            ->when($request->filled('search'), function($q) use ($request) {
+                $q->where('entrees.description', 'like', "%{$request->search}%");
+            })
+            ->when($request->filled('date_debut'), function($q) use ($request) {
+                $q->whereDate('entrees.date', '>=', $request->date_debut);
+            })
+            ->when($request->filled('date_fin'), function($q) use ($request) {
+                $q->whereDate('entrees.date', '<=', $request->date_fin);
+            })
+            ->when($request->filled('category_id'), function($q) use ($request) {
+                $q->where('entrees.category_id', $request->category_id);
+            });
 
-        return view('entree.index', [
-            'entrees' => $entrees,
-        ]);
+        // Calcul du montant total pour la période sélectionnée
+        $totalMontant = (clone $query)->sum('entrees.montant');
+
+        // Récupération des entrées avec pagination
+        $entrees = $query->latest('entrees.date')->paginate(15)->withQueryString();
+
+        // Récupération des catégories pour le filtre
+        $categories = Category::where('type', 'entree')->orderBy('nom')->get();
+
+        return view('entree.index', compact('entrees', 'categories', 'totalMontant'));
     }
 
-    public function create(Request $request)
+    public function create()
     {
-        return view('entree.create');
+        $categories = Category::where('type', 'entree')->orderBy('nom')->get();
+        return view('entree.create', compact('categories'));
     }
 
     public function store(EntreeStoreRequest $request)
     {
-        $entree = Entree::create($request->validated());
+        try {
+            DB::beginTransaction();
 
-        $request->session()->flash('entree.id', $entree->id);
+            $entree = new Entree($request->validated());
+            $entree->user_id = Auth::id();
+            $entree->save();
 
-        return redirect()->route('entrees.index');
+            DB::commit();
+
+            return redirect()
+                ->route('entrees.index')
+                ->with('success', 'L\'entrée a été enregistrée avec succès.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()
+                ->withInput()
+                ->with('error', 'Une erreur est survenue lors de l\'enregistrement de l\'entrée.');
+        }
     }
 
-    public function show(Request $request, Entree $entree)
+    public function show(Entree $entree)
     {
-        return view('entree.show', [
-            'entree' => $entree,
-        ]);
+        return view('entree.show', compact('entree'));
     }
 
-    public function edit(Request $request, Entree $entree)
+    public function edit(Entree $entree)
     {
-        return view('entree.edit', [
-            'entree' => $entree,
-        ]);
+        $categories = Category::where('type', 'entree')->orderBy('nom')->get();
+        return view('entree.edit', compact('entree', 'categories'));
     }
 
     public function update(EntreeUpdateRequest $request, Entree $entree)
     {
-        $entree->update($request->validated());
+        try {
+            DB::beginTransaction();
 
-        $request->session()->flash('entree.id', $entree->id);
+            $entree->update($request->validated());
 
-        return redirect()->route('entrees.index');
+            DB::commit();
+
+            return redirect()
+                ->route('entrees.index')
+                ->with('success', 'L\'entrée a été mise à jour avec succès.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()
+                ->withInput()
+                ->with('error', 'Une erreur est survenue lors de la mise à jour de l\'entrée.');
+        }
     }
 
-    public function destroy(Request $request, Entree $entree)
+    public function destroy(Entree $entree)
     {
-        $entree->delete();
+        try {
+            DB::beginTransaction();
 
-        return redirect()->route('entrees.index');
+            $entree->delete();
+
+            DB::commit();
+
+            return redirect()
+                ->route('entrees.index')
+                ->with('success', 'L\'entrée a été supprimée avec succès.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()
+                ->with('error', 'Une erreur est survenue lors de la suppression de l\'entrée.');
+        }
     }
 }

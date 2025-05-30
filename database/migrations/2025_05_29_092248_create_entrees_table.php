@@ -18,10 +18,11 @@ return new class extends Migration
             $table->date('date');
             $table->decimal('montant', 10, 2);
             $table->text('description')->nullable();
-            $table->foreignId('user_id')->constrained();
             $table->foreignId('category_id')->constrained();
-            $table->foreignId('category_user_id');
+            $table->foreignId('user_id')->constrained();
+           // $table->foreignId('category_user_id');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::enableForeignKeyConstraints();
