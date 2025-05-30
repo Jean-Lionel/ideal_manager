@@ -14,6 +14,7 @@
 
     <div class="col-md-6">
         <div class="mb-3">
+
             <label for="montant" class="form-label">Montant (FBU) <span class="text-danger">*</span></label>
             <div class="input-group">
                 <input type="number" step="0.01" min="0" class="form-control @error('montant') is-invalid @enderror"

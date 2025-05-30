@@ -49,7 +49,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h6 class="text-uppercase text-muted mb-1">Total des entrées</h6>
-                                    <h3 class="mb-0">{{ number_format($totalMontant, 2, ',', ' ') }} FCFA</h3>
+                                    <h3 class="mb-0">{{ number_format($totalMontant, 2, ',', ' ') }} FBU</h3>
                                 </div>
                                 <div class="bg-primary bg-opacity-25 p-3 rounded-circle">
                                     <i class="bi bi-currency-exchange fs-2 text-primary"></i>
@@ -64,7 +64,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h6 class="text-uppercase text-muted mb-1">Entrées ce mois</h6>
-                                    <h3 class="mb-0">{{ number_format($entrees->where('date', '>=', now()->startOfMonth())->sum('montant'), 2, ',', ' ') }} FCFA</h3>
+                                    <h3 class="mb-0">{{ number_format($entrees->where('date', '>=', now()->startOfMonth())->sum('montant'), 2, ',', ' ') }} FBU</h3>
                                 </div>
                                 <div class="bg-success bg-opacity-25 p-3 rounded-circle">
                                     <i class="bi bi-calendar-month fs-2 text-success"></i>
@@ -79,7 +79,7 @@
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h6 class="text-uppercase text-muted mb-1">Moyenne mensuelle</h6>
-                                    <h3 class="mb-0">{{ number_format($entrees->avg('montant') ?? 0, 2, ',', ' ') }} FCFA</h3>
+                                    <h3 class="mb-0">{{ number_format($entrees->avg('montant') ?? 0, 2, ',', ' ') }} FBU</h3>
                                 </div>
                                 <div class="bg-info bg-opacity-25 p-3 rounded-circle">
                                     <i class="bi bi-graph-up fs-2 text-info"></i>
@@ -111,7 +111,7 @@
                                 @forelse($entrees as $entree)
                                     <tr>
                                         <td>{{ $entree->date->format('d/m/Y') }}</td>
-                                        <td class="fw-bold text-success">+{{ number_format($entree->montant, 2, ',', ' ') }} FCFA</td>
+                                        <td class="fw-bold text-success">+{{ number_format($entree->montant, 2, ',', ' ') }} FBU</td>
                                         <td>{{ Str::limit($entree->description, 50) }}</td>
                                         <td>
                                             <span class="badge" style="background-color: {{ $entree->category->couleur ?? '#6c757d' }}; color: white;">
