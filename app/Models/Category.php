@@ -29,6 +29,8 @@ class Category extends Model
     protected function casts(): array
     {
         return [
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
             'id' => 'integer',
         ];
     }
@@ -36,5 +38,46 @@ class Category extends Model
     public function entreeSortieVersementPaiements(): HasMany
     {
         return $this->hasMany(EntreeSortieVersementPaiement::class);
+    }
+
+    public function entrees()
+    {
+        return $this->hasMany(Entree::class);
+    }
+
+    public function sorties()
+    {
+        return $this->hasMany(Sortie::class);
+    }
+
+    // Scopes
+    public function scopeOfType($query, $type)
+    {
+        return $query->where('type', $type);
+    }
+
+    // Méthodes utilitaires
+    public function getTypeLabelAttribute()
+    {
+        $types = [
+            'entree' => 'Entrée',
+            'sortie' => 'Sortie',
+            'paiement' => 'Paiement',
+            'versement' => 'Versement',
+        ];
+
+        return $types[$this->type] ?? $this->type;
+    }
+
+    public function getTypeClassAttribute()
+    {
+        $classes = [
+            'entree' => 'success',
+            'sortie' => 'danger',
+            'paiement' => 'info',
+            'versement' => 'warning',
+        ];
+
+        return $classes[$this->type] ?? 'secondary';
     }
 }

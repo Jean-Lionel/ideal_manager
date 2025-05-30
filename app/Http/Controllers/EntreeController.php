@@ -11,7 +11,7 @@ use Illuminate\View\View;
 
 class EntreeController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request)
     {
         $entrees = Entree::all();
 
@@ -20,12 +20,12 @@ class EntreeController extends Controller
         ]);
     }
 
-    public function create(Request $request): Response
+    public function create(Request $request)
     {
         return view('entree.create');
     }
 
-    public function store(EntreeStoreRequest $request): Response
+    public function store(EntreeStoreRequest $request)
     {
         $entree = Entree::create($request->validated());
 
@@ -34,21 +34,21 @@ class EntreeController extends Controller
         return redirect()->route('entrees.index');
     }
 
-    public function show(Request $request, Entree $entree): Response
+    public function show(Request $request, Entree $entree)
     {
         return view('entree.show', [
             'entree' => $entree,
         ]);
     }
 
-    public function edit(Request $request, Entree $entree): Response
+    public function edit(Request $request, Entree $entree)
     {
         return view('entree.edit', [
             'entree' => $entree,
         ]);
     }
 
-    public function update(EntreeUpdateRequest $request, Entree $entree): Response
+    public function update(EntreeUpdateRequest $request, Entree $entree)
     {
         $entree->update($request->validated());
 
@@ -57,7 +57,7 @@ class EntreeController extends Controller
         return redirect()->route('entrees.index');
     }
 
-    public function destroy(Request $request, Entree $entree): Response
+    public function destroy(Request $request, Entree $entree)
     {
         $entree->delete();
 

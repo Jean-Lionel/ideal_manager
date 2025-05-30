@@ -17,6 +17,7 @@ return new class extends Migration
             $table->enum('type', ["entree","sortie","paiement","versement"]);
             $table->text('description')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
