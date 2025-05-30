@@ -95,7 +95,7 @@ class PaiementController extends Controller
      */
     public function show(Paiement $paiement): View
     {
-        return view('paiements.show', compact('paiement'));
+        return view('paiement.show', compact('paiement'));
     }
 
     /**
