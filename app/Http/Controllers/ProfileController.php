@@ -13,6 +13,14 @@ class ProfileController extends Controller
     /**
      * Display a listing of the users.
      */
+
+    /**
+     * Display a listing of the rapports.
+     */
+    public function rapports()
+    {
+        return view('rapports.index');
+    }
     public function index()
     {
         $users = User::all();

@@ -228,6 +228,15 @@
                             </a>
                         </li>
 
+                        <!-- Rapports -->
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('rapports.*') ? 'active' : '' }}"
+                               href="{{ route('rapports.index') }}">
+                                <i class="bi bi-bar-chart-fill text-primary"></i>
+                                Rapports
+                            </a>
+                        </li>
+
                         <!-- Utilisateurs (Admin uniquement) -->
                         @if(auth()->user() && auth()->user()->is_admin)
                         <li class="nav-item">

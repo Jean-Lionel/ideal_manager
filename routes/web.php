@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EntreeController;
 use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RapportController;
 use App\Http\Controllers\SortieController;
 use App\Http\Controllers\VersementController;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,9 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
+    // Routes des rapports
+    Route::get('/rapports', [RapportController::class, 'index'])->name('rapports.index');
+    Route::get('/rapports/generer', [RapportController::class, 'genererRapport'])->name('rapports.generer');
 });
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
