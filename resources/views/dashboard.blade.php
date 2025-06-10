@@ -25,8 +25,8 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted mb-1">Solde total</h6>
-                            <h3 class="mb-0">0 FBU</h3>
+                            <h6 class="text-muted mb-1">Paiement</h6>
+                            <h3 class="mb-0">{{ number_format($paiements)  }} FBU</h3>
                         </div>
                         <div class="bg-primary bg-opacity-25 p-3 rounded-circle">
                             <i class="bi bi-wallet2 text-primary" style="font-size: 1.5rem;"></i>
@@ -46,7 +46,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-1">Revenus</h6>
-                            <h3 class="mb-0">0 FBU</h3>
+                            <h3 class="mb-0"> {{ number_format( $entres) }} FBU</h3>
                         </div>
                         <div class="bg-success bg-opacity-25 p-3 rounded-circle">
                             <i class="bi bi-arrow-down-circle text-success" style="font-size: 1.5rem;"></i>
@@ -66,7 +66,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-1">Dépenses</h6>
-                            <h3 class="mb-0">0 FBU</h3>
+                            <h3 class="mb-0">{{ number_format($sorties) }} FBU</h3>
                         </div>
                         <div class="bg-danger bg-opacity-25 p-3 rounded-circle">
                             <i class="bi bi-arrow-up-circle text-danger" style="font-size: 1.5rem;"></i>
@@ -86,7 +86,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-1">Épargne</h6>
-                            <h3 class="mb-0">0 FBU</h3>
+                            <h3 class="mb-0">{{ number_format($versements) }} FBU</h3>
                         </div>
                         <div class="bg-warning bg-opacity-25 p-3 rounded-circle">
                             <i class="bi bi-piggy-bank text-warning" style="font-size: 1.5rem;"></i>

@@ -16,7 +16,7 @@
         <!-- Cartes de statistiques -->
         <div class="col-12 mb-4">
             <div class="row">
-                <div class="col-md-3 mb-3">
+                <div class="col-md-4 mb-3">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
@@ -32,7 +32,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-3 mb-3">
+                <div class="col-md-4 mb-3">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
@@ -48,7 +48,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-3 mb-3">
+                <div class="col-md-4 mb-3">
                     <div class="card border-0 shadow-sm">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
@@ -64,22 +64,20 @@
                     </div>
                 </div>
 
-                <div class="col-md-3 mb-3">
-                    <a href="{{ route('sorties.create') }}" class="btn btn-primary w-100 h-100 d-flex flex-column justify-content-center align-items-center">
-                        <i class="bi bi-plus-circle fs-1 mb-2"></i>
-                        <span>Nouvelle sortie</span>
-                    </a>
-                </div>
+
             </div>
         </div>
-
-
         <!-- Filtres et tableau -->
         <div class="col-12">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white">
+                    <a href="{{ route('sorties.create') }}" class="btn btn-primary ">
+                        <i class="bi bi-plus-circle "></i>
+                        <span>Nouvelle sortie</span>
+                    </a>
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Liste des sorties</h5>
+
                         <div class="d-flex">
                             <form action="{{ route('sorties.index') }}" method="GET" class="me-2">
                                 <div class="input-group">

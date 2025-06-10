@@ -363,7 +363,8 @@
                 <footer class="footer py-3 px-4 mt-auto">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <small>© {{ date('Y') }} Finances Manager. Tous droits réservés.</small>
+                            <small>© {{ date('Y') }} <a href="https://advanceditb.com/">Advanced IT And Research Burundi </a>
+                                . Tous droits réservés.</small>
                         </div>
                         <div>
                             <small class="text-muted">Version 1.0</small>
@@ -376,6 +377,17 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Initialisation des composants Bootstrap -->
+    <script>
+        // Initialisation des tooltips et popovers
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
 
     <!-- Custom JavaScript -->
     <script>
