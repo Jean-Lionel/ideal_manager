@@ -1,146 +1,192 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="mb-0">Rapport Financier</h3>
-                    <div class="badge badge-primary">
+        <div class="col-12">
+            <div class="card shadow-lg">
+                <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-graph-up me-3" style="font-size: 1.5rem;"></i>
+                        <h3 class="mb-0 fw-bold">Rapport Financier</h3>
+                    </div>
+                    <div class="badge bg-light text-dark fs-6 px-3 py-2">
+                        <i class="bi bi-calendar-range me-2"></i>
                         {{ \Carbon\Carbon::parse($dateDebut)->translatedFormat('d M Y') }} - {{ \Carbon\Carbon::parse($dateFin)->translatedFormat('d M Y') }}
                     </div>
                 </div>
 
-                <div class="card-body">
-                    <form method="GET" action="{{ route('rapports.generer') }}" class="mb-4">
-                        @csrf
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="date_debut">Date de début :</label>
-                                    <input type="date" name="date_debut" id="date_debut" class="form-control"
-                                           value="{{ $dateDebut ?? old('date_debut', now()->startOfMonth()->format('Y-m-d')) }}" required>
+                <div class="card-body p-4">
+                    <!-- Formulaire de filtre -->
+                    <div class="card mb-4 border-0 bg-light">
+                        <div class="card-body">
+                            <form method="GET" action="{{ route('rapports.generer') }}">
+                                @csrf
+                                <div class="row align-items-end g-3">
+                                    <div class="col-md-4">
+                                        <label for="date_debut" class="form-label fw-semibold">
+                                            <i class="bi bi-calendar-event me-2"></i>Date de début
+                                        </label>
+                                        <input type="date" name="date_debut" id="date_debut" class="form-control form-control-lg"
+                                               value="{{ $dateDebut ?? old('date_debut', now()->startOfMonth()->format('Y-m-d')) }}" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="date_fin" class="form-label fw-semibold">
+                                            <i class="bi bi-calendar-check me-2"></i>Date de fin
+                                        </label>
+                                        <input type="date" name="date_fin" id="date_fin" class="form-control form-control-lg"
+                                               value="{{ $dateFin ?? old('date_fin', now()->format('Y-m-d')) }}" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                                            <i class="bi bi-search me-2"></i>Générer le rapport
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="date_fin">Date de fin :</label>
-                                    <input type="date" name="date_fin" id="date_fin" class="form-control"
-                                           value="{{ $dateFin ?? old('date_fin', now()->format('Y-m-d')) }}" required>
-                                </div>
-                            </div>
-                            <div class="col-md-4 d-flex align-items-end">
-                                <button type="submit" class="btn btn-primary">Générer le rapport</button>
-                            </div>
+                            </form>
                         </div>
-                    </form>
+                    </div>
 
-
-                    <div class="row">
+                    <!-- Cartes principales -->
+                    <div class="row g-4 mb-4">
                         <!-- Carte des entrées -->
-                        <div class="col-md-6 mb-4">
-                            <div class="card bg-light">
-                                <div class="card-header bg-success text-white">
-                                    <h4 class="mb-0">Entrées</h4>
+                        <div class="col-lg-6 col-xl-3">
+                            <div class="card h-100 border-0 shadow-sm card-hover">
+                                <div class="card-header bg-gradient-success text-white border-0">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <h5 class="mb-0 fw-bold">Entrées</h5>
+                                        <i class="bi bi-arrow-down-circle" style="font-size: 1.5rem;"></i>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <h2 class="text-center">{{ number_format($sommeEntrees ?? 0, 0, ',', ' ') }} FBU</h2>
+                                <div class="card-body text-center">
+                                    <h2 class="display-6 fw-bold text-success mb-3">
+                                        {{ number_format($sommeEntrees ?? 0, 0, ',', ' ') }} <small class="text-muted">FBU</small>
+                                    </h2>
 
                                     @if(isset($entreesParCategorie) && $entreesParCategorie->count() > 0)
                                         <div class="mt-3">
-                                            <h5>Par catégorie :</h5>
-                                            <ul class="list-group">
-                                                @foreach($entreesParCategorie as $entree)
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        {{ $entree->category->name ?? 'Non catégorisé' }}
-                                                        <span class="badge badge-success badge-pill">{{ number_format($entree->total, 0, ',', ' ') }}
-                                                            FBU
-                                                        </span>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
+                                            <h6 class="text-muted mb-3">
+                                                <i class="bi bi-pie-chart me-2"></i>Répartition par catégorie
+                                            </h6>
+                                            @foreach($entreesParCategorie as $entree)
+                                                <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+                                                    <span class="fw-medium">{{ $entree->category->nom ?? 'Non catégorisé' }}</span>
+                                                    <span class="badge bg-success fs-6">
+                                                        {{ number_format($entree->total, 0, ',', ' ') }} FBU
+                                                    </span>
+                                                </div>
+                                                <div class="progress mb-2" style="height: 4px;">
+                                                    <div class="progress-bar bg-success" style="width: {{ $sommeEntrees > 0 ? ($entree->total / $sommeEntrees) * 100 : 0 }}%"></div>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     @endif
                                 </div>
                             </div>
                         </div>
 
-
                         <!-- Carte des sorties -->
-                        <div class="col-md-6 mb-4">
-                            <div class="card bg-light">
-                                <div class="card-header bg-danger text-white">
-                                    <h4 class="mb-0">Sorties</h4>
+                        <div class="col-lg-6 col-xl-3">
+                            <div class="card h-100 border-0 shadow-sm card-hover">
+                                <div class="card-header bg-gradient-danger text-white border-0">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <h5 class="mb-0 fw-bold">Sorties</h5>
+                                        <i class="bi bi-arrow-up-circle" style="font-size: 1.5rem;"></i>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <h2 class="text-center">{{ number_format($sommeSorties ?? 0, 0, ',', ' ') }} FBU</h2>
+                                <div class="card-body text-center">
+                                    <h2 class="display-6 fw-bold text-danger mb-3">
+                                        {{ number_format($sommeSorties ?? 0, 0, ',', ' ') }} <small class="text-muted">FBU</small>
+                                    </h2>
 
                                     @if(isset($sortiesParCategorie) && $sortiesParCategorie->count() > 0)
                                         <div class="mt-3">
-                                            <h5>Par catégorie :</h5>
-                                            <ul class="list-group">
-                                                @foreach($sortiesParCategorie as $sortie)
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        {{ $sortie->category->name ?? 'Non catégorisé' }}
-                                                        <span class="badge badge-danger badge-pill">{{ number_format($sortie->total, 0, ',', ' ') }} FBU</span>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
+                                            <h6 class="text-muted mb-3">
+                                                <i class="bi bi-pie-chart me-2"></i>Répartition par catégorie
+                                            </h6>
+                                            @foreach($sortiesParCategorie as $sortie)
+                                                <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+                                                    <span class="fw-medium">{{ $sortie->category->nom ?? 'Non catégorisé' }}</span>
+                                                    <span class="badge bg-danger fs-6">
+                                                        {{ number_format($sortie->total, 0, ',', ' ') }} FBU
+                                                    </span>
+                                                </div>
+                                                <div class="progress mb-2" style="height: 4px;">
+                                                    <div class="progress-bar bg-danger" style="width: {{ $sommeSorties > 0 ? ($sortie->total / $sommeSorties) * 100 : 0 }}%"></div>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     @endif
                                 </div>
                             </div>
                         </div>
 
-
                         <!-- Carte des versements -->
-                        <div class="col-md-6 mb-4">
-                            <div class="card bg-light">
-                                <div class="card-header bg-primary text-white">
-                                    <h4 class="mb-0">Versements</h4>
+                        <div class="col-lg-6 col-xl-3">
+                            <div class="card h-100 border-0 shadow-sm card-hover">
+                                <div class="card-header bg-gradient-primary text-white border-0">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <h5 class="mb-0 fw-bold">Versements</h5>
+                                        <i class="bi bi-bank" style="font-size: 1.5rem;"></i>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <h2 class="text-center">{{ number_format($sommeVersements ?? 0, 0, ',', ' ') }} FBU</h2>
+                                <div class="card-body text-center">
+                                    <h2 class="display-6 fw-bold text-primary mb-3">
+                                        {{ number_format($sommeVersements ?? 0, 0, ',', ' ') }} <small class="text-muted">FBU</small>
+                                    </h2>
 
                                     @if(isset($versementsParCategorie) && $versementsParCategorie->count() > 0)
                                         <div class="mt-3">
-                                            <h5>Par catégorie :</h5>
-                                            <ul class="list-group">
-                                                @foreach($versementsParCategorie as $versement)
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        {{ $versement->category->name ?? 'Non catégorisé' }}
-                                                        <span class="badge badge-primary badge-pill">{{ number_format($versement->total, 0, ',', ' ') }} FBU</span>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
+                                            <h6 class="text-muted mb-3">
+                                                <i class="bi bi-pie-chart me-2"></i>Répartition par catégorie
+                                            </h6>
+                                            @foreach($versementsParCategorie as $versement)
+                                                <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+                                                    <span class="fw-medium">{{ $versement->category->nom ?? 'Non catégorisé' }}</span>
+                                                    <span class="badge bg-primary fs-6">
+                                                        {{ number_format($versement->total, 0, ',', ' ') }} FBU
+                                                    </span>
+                                                </div>
+                                                <div class="progress mb-2" style="height: 4px;">
+                                                    <div class="progress-bar bg-primary" style="width: {{ $sommeVersements > 0 ? ($versement->total / $sommeVersements) * 100 : 0 }}%"></div>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     @endif
                                 </div>
                             </div>
                         </div>
 
-
                         <!-- Carte des paiements -->
-                        <div class="col-md-6 mb-4">
-                            <div class="card bg-light">
-                                <div class="card-header bg-info text-white">
-                                    <h4 class="mb-0">Paiements</h4>
+                        <div class="col-lg-6 col-xl-3">
+                            <div class="card h-100 border-0 shadow-sm card-hover">
+                                <div class="card-header bg-gradient-info text-white border-0">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <h5 class="mb-0 fw-bold">Paiements</h5>
+                                        <i class="bi bi-credit-card" style="font-size: 1.5rem;"></i>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <h2 class="text-center">{{ number_format($sommePaiements ?? 0, 0, ',', ' ') }} FBU</h2>
+                                <div class="card-body text-center">
+                                    <h2 class="display-6 fw-bold text-info mb-3">
+                                        {{ number_format($sommePaiements ?? 0, 0, ',', ' ') }} <small class="text-muted">FBU</small>
+                                    </h2>
 
                                     @if(isset($paiementsParCategorie) && $paiementsParCategorie->count() > 0)
                                         <div class="mt-3">
-                                            <h5>Par catégorie :</h5>
-                                            <ul class="list-group">
-                                                @foreach($paiementsParCategorie as $paiement)
-                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                        {{ $paiement->category->name ?? 'Non catégorisé' }}
-                                                        <span class="badge badge-info badge-pill">{{ number_format($paiement->total, 0, ',', ' ') }} FBU</span>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
+                                            <h6 class="text-muted mb-3">
+                                                <i class="bi bi-pie-chart me-2"></i>Répartition par catégorie
+                                            </h6>
+                                            @foreach($paiementsParCategorie as $paiement)
+                                                <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+                                                    <span class="fw-medium">{{ $paiement->category->nom ?? 'Non catégorisé' }}</span>
+                                                    <span class="badge bg-info fs-6">
+                                                        {{ number_format($paiement->total, 0, ',', ' ') }} FBU
+                                                    </span>
+                                                </div>
+                                                <div class="progress mb-2" style="height: 4px;">
+                                                    <div class="progress-bar bg-info" style="width: {{ $sommePaiements > 0 ? ($paiement->total / $sommePaiements) * 100 : 0 }}%"></div>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     @endif
                                 </div>
@@ -149,41 +195,97 @@
                     </div>
 
                     <!-- Bilan global -->
-                    <div class="row mt-4">
+                    <div class="row">
                         <div class="col-12">
-                            <div class="card">
-                                <div class="card-header bg-dark text-white">
-                                    <h4 class="mb-0">Bilan Global</h4>
+                            <div class="card border-0 shadow-lg">
+                                <div class="card-header bg-dark text-white border-0">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-calculator me-3" style="font-size: 1.5rem;"></i>
+                                        <h4 class="mb-0 fw-bold">Bilan Global</h4>
+                                    </div>
                                 </div>
-                                <div class="card-body">
+                                <div class="card-body p-4">
                                     @php
                                         $totalEntrees = $sommeEntrees ?? 0;
                                         $totalSorties = $sommeSorties ?? 0;
                                         $totalVersements = $sommeVersements ?? 0;
                                         $totalPaiements = $sommePaiements ?? 0;
-
                                         $solde = ($totalEntrees + $totalPaiements) - ($totalSorties + $totalVersements);
+                                        $totalRecettes = $totalEntrees + $totalPaiements;
+                                        $totalDepenses = $totalSorties + $totalVersements;
                                     @endphp
 
-                                    <div class="row text-center">
-                                        <div class="col-md-3">
-                                            <h5>Total Entrées</h5>
-                                            <h3 class="text-success">{{ number_format($totalEntrees, 0, ',', ' ') }} FBU</h3>
+                                    <div class="row g-4 text-center">
+                                        <div class="col-md-6 col-lg-3">
+                                            <div class="p-3 bg-success bg-opacity-10 rounded-3">
+                                                <i class="bi bi-arrow-down-circle text-success mb-2" style="font-size: 2rem;"></i>
+                                                <h6 class="text-muted mb-1">Total Recettes</h6>
+                                                <h3 class="text-success fw-bold mb-0">{{ number_format($totalRecettes, 0, ',', ' ') }} FBU</h3>
+                                                <small class="text-muted">Entrées + Paiements</small>
+                                            </div>
                                         </div>
-                                        <div class="col-md-3">
-                                            <h5>Total Sorties</h5>
-                                            <h3 class="text-danger">{{ number_format($totalSorties, 0, ',', ' ') }} FBU</h3>
+                                        <div class="col-md-6 col-lg-3">
+                                            <div class="p-3 bg-danger bg-opacity-10 rounded-3">
+                                                <i class="bi bi-arrow-up-circle text-danger mb-2" style="font-size: 2rem;"></i>
+                                                <h6 class="text-muted mb-1">Total Dépenses</h6>
+                                                <h3 class="text-danger fw-bold mb-0">{{ number_format($totalDepenses, 0, ',', ' ') }} FBU</h3>
+                                                <small class="text-muted">Sorties + Versements</small>
+                                            </div>
                                         </div>
-                                        <div class="col-md-3">
-                                            <h5>Total Paiements</h5>
-                                            <h3 class="text-info">{{ number_format($totalPaiements, 0, ',', ' ') }} FBU</h3>
+                                        <div class="col-md-6 col-lg-3">
+                                            <div class="p-3 bg-info bg-opacity-10 rounded-3">
+                                                <i class="bi bi-percent text-info mb-2" style="font-size: 2rem;"></i>
+                                                <h6 class="text-muted mb-1">Taux d'épargne</h6>
+                                                <h3 class="text-info fw-bold mb-0">
+                                                    {{ $totalRecettes > 0 ? number_format(($solde / $totalRecettes) * 100, 1) : 0 }}%
+                                                </h3>
+                                                <small class="text-muted">Solde / Recettes</small>
+                                            </div>
                                         </div>
-                                        <div class="col-md-3">
-                                            <h5>Solde</h5>
-                                            <h3 class="font-weight-bold {{ $solde >= 0 ? 'text-success' : 'text-danger' }}">
-                                                {{ number_format(abs($solde), 0, ',', ' ') }} FBU
-                                                @if($solde < 0) (Déficit) @endif
-                                            </h3>
+                                        <div class="col-md-6 col-lg-3">
+                                            <div class="p-3 {{ $solde >= 0 ? 'bg-success' : 'bg-danger' }} bg-opacity-10 rounded-3">
+                                                <i class="bi bi-{{ $solde >= 0 ? 'plus' : 'dash' }}-circle {{ $solde >= 0 ? 'text-success' : 'text-danger' }} mb-2" style="font-size: 2rem;"></i>
+                                                <h6 class="text-muted mb-1">Solde Final</h6>
+                                                <h3 class="fw-bold mb-0 {{ $solde >= 0 ? 'text-success' : 'text-danger' }}">
+                                                    {{ $solde >= 0 ? '+' : '-' }}{{ number_format(abs($solde), 0, ',', ' ') }} FBU
+                                                </h3>
+                                                <small class="text-muted">{{ $solde >= 0 ? 'Excédent' : 'Déficit' }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Graphique de répartition -->
+                                    <div class="row mt-4">
+                                        <div class="col-12">
+                                            <div class="bg-light p-3 rounded-3">
+                                                <h6 class="mb-3 fw-semibold">
+                                                    <i class="bi bi-bar-chart me-2"></i>Répartition des flux financiers
+                                                </h6>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="progress mb-2" style="height: 20px;">
+                                                            <div class="progress-bar bg-success" style="width: {{ $totalRecettes > 0 ? ($totalEntrees / $totalRecettes) * 100 : 0 }}%">
+                                                                Entrées ({{ $totalRecettes > 0 ? round(($totalEntrees / $totalRecettes) * 100, 1) : 0 }}%)
+                                                            </div>
+                                                            <div class="progress-bar bg-info" style="width: {{ $totalRecettes > 0 ? ($totalPaiements / $totalRecettes) * 100 : 0 }}%">
+                                                                Paiements ({{ $totalRecettes > 0 ? round(($totalPaiements / $totalRecettes) * 100, 1) : 0 }}%)
+                                                            </div>
+                                                        </div>
+                                                        <small class="text-muted">Répartition des recettes</small>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="progress mb-2" style="height: 20px;">
+                                                            <div class="progress-bar bg-danger" style="width: {{ $totalDepenses > 0 ? ($totalSorties / $totalDepenses) * 100 : 0 }}%">
+                                                                Sorties ({{ $totalDepenses > 0 ? round(($totalSorties / $totalDepenses) * 100, 1) : 0 }}%)
+                                                            </div>
+                                                            <div class="progress-bar bg-primary" style="width: {{ $totalDepenses > 0 ? ($totalVersements / $totalDepenses) * 100 : 0 }}%">
+                                                                Versements ({{ $totalDepenses > 0 ? round(($totalVersements / $totalDepenses) * 100, 1) : 0 }}%)
+                                                            </div>
+                                                        </div>
+                                                        <small class="text-muted">Répartition des dépenses</small>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -197,45 +299,84 @@
 </div>
 
 <style>
-    .card {
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-        border: none;
-        border-radius: 0.5rem;
-        margin-bottom: 1.5rem;
-        transition: transform 0.2s;
+    .bg-gradient-primary {
+        background: #0d6efd;
     }
-    .card:hover {
-        transform: translateY(-5px);
+    .bg-gradient-success {
+        background: #1cc88a;
     }
-    .card-header {
-        border-radius: 0.5rem 0.5rem 0 0 !important;
-        padding: 1rem 1.25rem;
+    .bg-gradient-danger {
+        background: #e74a3b;
     }
-    .card-body h2 {
+    .bg-gradient-info {
+        background: #36b9cc;
+    }
+
+    
+
+    .progress {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        font-size: 0.75rem;
         font-weight: 600;
-        margin: 0;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
-    .btn-primary {
-        background-color: #4e73df;
-        border-color: #4e73df;
+
+    .display-6 {
+        font-size: 2rem;
     }
-    .btn-primary:hover {
-        background-color: #2e59d9;
-        border-color: #2653d4;
+
+    .bg-opacity-10 {
+        --bs-bg-opacity: 0.1;
     }
-    .badge-pill {
-        padding: 0.5em 0.8em;
-        font-size: 0.9em;
+
+    .rounded-3 {
+        border-radius: 0.5rem !important;
     }
-    .list-group-item {
-        border-left: none;
-        border-right: none;
+
+    .card {
+        border-radius: 1rem;
+        overflow: hidden;
     }
-    .list-group-item:first-child {
-        border-top: none;
-    }
-    .list-group-item:last-child {
+
+    .card-header {
         border-bottom: none;
+        padding: 1.5rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .badge {
+        font-weight: 500;
+    }
+
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+    }
+
+    .form-control-lg {
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        border: 2px solid #e3e6f0;
+        transition: all 0.3s ease;
+    }
+
+    .form-control-lg:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+
+    .form-label {
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
     }
 </style>
 @endsection
