@@ -39,10 +39,18 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['admin'])->group(function () {
         Route::resource('users', UserController::class);
     });
-    //profile.edit
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Routes de gestion des utilisateurs
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
+        Route::get('/create', [ProfileController::class, 'create'])->name('profile.create');
+        Route::post('/', [ProfileController::class, 'store'])->name('profile.store');
+        Route::get('/{id}', [ProfileController::class, 'show'])->name('profile.show');
+        Route::get('/{id}/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/{id}', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/{id}', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
+
 });
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Finances Manager') }} - @yield('title', 'Tableau de bord')</title>
+    <title>{{ config('app.name', 'Galerie Idéale') }} - @yield('title', 'Tableau de bord')</title>
 
     <!-- Bootstrap CSS 5.3.2 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -168,7 +168,7 @@
                 <!-- Brand -->
                 <div class="sidebar-brand">
                     <i class="bi bi-graph-up me-2"></i>
-                    Finances Manager
+                    Galerie Idéale
                 </div>
 
                 <!-- Navigation Menu -->
@@ -245,7 +245,7 @@
                     <ul class="nav nav-pills flex-column">
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}"
-                               href="{{ route('profile.edit') }}">
+                               href="{{ route('profile.edit', auth()->user()->id) }}">
                                 <i class="bi bi-gear"></i>
                                 Paramètres
                             </a>
@@ -301,7 +301,7 @@
 
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                                        <a class="dropdown-item" href="">
                                             <i class="bi bi-person me-2"></i>
                                             Mon Profil
                                         </a>
