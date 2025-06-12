@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return redirect()->route('dashboard');
 });
 
 Auth::routes();
@@ -55,8 +55,8 @@ Route::middleware(['auth'])->group(function () {
     // Routes des rapports
     Route::get('/rapports', [RapportController::class, 'index'])->name('rapports.index');
     Route::get('/generer', [RapportController::class, 'generer'])->name('rapports.generer');
-   
+
 
 });
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
